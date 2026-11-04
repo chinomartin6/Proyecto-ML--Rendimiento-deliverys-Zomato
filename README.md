@@ -189,7 +189,7 @@ Para la siguiente iteración del proyecto analítico, se recomienda:
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone https://github.com/tu-usuario/zomato-delivery-analytics.git
+   git clone https:[//github.com/tu-usuario/zomato-delivery-analytics.git](https://github.com/chinomartin6/Proyecto-ML--Rendimiento-deliverys-Zomato)
    cd zomato-delivery-analytics
    ```
 
