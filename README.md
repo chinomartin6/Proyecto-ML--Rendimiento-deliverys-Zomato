@@ -123,6 +123,8 @@ Se entrenaron y evaluaron cuatro algoritmos de regresión supervisada para prede
 
 ## 🔬 Diagnóstico de Causa Raíz e Inferencia Estadística (Fase 9)
 
+![Dashboard Causa Raíz e Inferencia](images/dashboard_fase9.png)
+
 Dado que la calificación ($y$) depende directamente del tiempo de entrega ($X_{\text{principal}}$), la Fase 9 evaluó las causas raíz estructurales que generan demoras, aplicando pruebas inferenciales formales.
 
 $$\text{Factores Operativos } (\text{Tráfico, Vehículo, Clima, Calendario}) \longrightarrow \text{Tiempo de Entrega } (X_{\text{principal}}) \longrightarrow \text{Calificación } (y)$$
