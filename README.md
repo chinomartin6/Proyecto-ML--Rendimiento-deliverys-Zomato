@@ -1,211 +1,200 @@
-# 🚴 Zomato Delivery Operations: Optimización de Tiempos y Calificaciones mediante Machine Learning e Inferencia Estadística
+# 🛵 Zomato Delivery Operations: Análisis de Causa Raíz, Inferencia Estadística y Modelado Predictivo
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-ML%20Modeling-orange.svg)](https://scikit-learn.org/)
-[![SciPy](https://img.shields.io/badge/SciPy-Inferential%20Stats-green.svg)](https://scipy.org/)
-[![SQLite](https://img.shields.io/badge/SQLite-Data%20Ingestion-blueviolet.svg)](https://www.sqlite.org/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.2%2B-orange?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Pandas](https://img.shields.io/badge/Pandas-2.0%2B-150458?logo=pandas&logoColor=white)](https://pandas.pydata.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-3.0-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
 ## 📋 Tabla de Contenidos
-1. [Contexto del Problema y Pregunta de Negocio](#-contexto-del-problema-y-pregunta-de-negocio)
-2. [Arquitectura del Dataset e Ingesta de Datos](#-arquitectura-del-dataset-e-ingesta-de-datos)
-3. [Análisis Exploratorio de Datos (EDA) y Limpieza Espacial](#-análisis-exploratorio-de-datos-eda-y-limpieza-espacial)
-4. [Ingeniería de Características (Feature Engineering)](#-ingeniería-de-características-feature-engineering)
-5. [Auditoría de Calidad y Prevención de Data Leakage](#-auditoría-de-calidad-y-prevención-de-data-leakage)
-6. [Modelado Predictivo de Machine Learning (Fase 8)](#-modelado-predictivo-de-machine-learning-fase-8)
-7. [Diagnóstico de Causa Raíz e Inferencia Estadística (Fase 9)](#-diagnóstico-de-causa-raíz-e-inferencia-estadística-fase-9)
-8. [Conclusiones y Recomendaciones Prescriptivas de Negocio (Fase 10)](#-conclusiones-y-recomendaciones-prescriptivas-de-negocio-fase-10)
-9. [Hoja de Ruta Técnica (Evolución v2.0)](#-hoja-de-ruta-técnica-evolución-v20)
-10. [Instrucciones de Reproducibilidad](#-instrucciones-de-reproducibilidad)
+
+ 1. [Contexto del Problema y Objetivos de Negocio](#-1-contexto-del-problema-y-objetivos-de-negocio)
+ 2. [Ingesta de Datos y Arquitectura del Pipeline](#%EF%B8%8F-2-ingesta-de-datos-y-arquitectura-del-pipeline)
+ 3. [Preprocesamiento, Auditoría de Calidad y EDA](#-3-preprocesamiento-auditor%C3%ADa-de-calidad-y-eda)
+ 4. [Ingeniería de Características (Feature Engineering)](#-4-ingenier%C3%ADa-de-caracter%C3%ADsticas-feature-engineering)
+ 5. [Codificación y Prevención de Target Leakage](#-5-codificaci%C3%B3n-y-prevenci%C3%B3n-de-target-leakage)
+ 6. [Modelado Predictivo de Machine Learning (Fase 8)](#-6-modelado-predictivo-de-machine-learning-fase-8)
+ 7. [Diagnóstico de Causa Raíz e Inferencia Estadística (Fase 9)](#-7-diagn%C3%B3stico-de-causa-ra%C3%ADz-e-inferencia-estad%C3%ADstica-fase-9)
+ 8. [Recomendaciones Prescriptivas de Negocio (Fase 10)](#-8-recomendaciones-prescriptivas-de-negocio-fase-10)
+ 9. [Hoja de Ruta Técnica (Evolución v2.0)](#-9-hoja-de-ruta-t%C3%A9cnica-evoluci%C3%B3n-v20)
+10. [Instrucciones de Reproducibilidad](#-10-instrucciones-de-reproducibilidad)
+11. [Tecnologías Utilizadas](#-11-tecnolog%C3%ADas-utilizadas)
+12. [Autor y Contacto](#-12-autor-y-contacto)
 
 ---
 
-## 🎯 Contexto del Problema y Pregunta de Negocio
+## 📌 1. Contexto del Problema y Objetivos de Negocio
 
-En las plataformas de entrega a domicilio (*Quick-Commerce* / *Food Delivery*), la satisfacción del cliente impacta de forma directa sobre la retención de usuarios y el *Lifetime Value* (LTV). Zomato identificó una fluctuación en las evaluaciones otorgadas a los repartidores, lo que motivó el desarrollo de este pipeline analítico end-to-end.
+Zomato enfrenta variaciones significativas en el rendimiento de su red de distribución urbana y en las calificaciones que los usuarios asignan a los repartidores. Este proyecto busca transformar registros operativos crudos en un sistema de analítica diagnóstica y predictiva orientado a la toma de decisiones estratégicas.
 
-* **Pregunta Problema Central:** ¿Cuáles son las causas raíz operativas y de entorno que provocan bajas calificaciones en los repartidores de Zomato?
-* **Objetivos de Negocio:**
-  1. Cuantificar el peso predictivo de las variables logísticas (tiempo, distancia, tráfico, clima, flota) sobre la valoración recibida por el repartidor (`delivery_person_ratings`).
-  2. Identificar y validar estadísticamente las cuellos de botella que incrementan el tiempo de entrega (`time_taken_(min)`).
-  3. Formular un plan de acción prescriptivo con impacto directo en la operación y en la arquitectura algorítmica de la app.
+### 🎯 Preguntas Problema
+1. **Evaluación de Rendimiento:** ¿Qué factores operativos (tráfico, clima, estado del vehículo, distancia y ruteo) determinan la satisfacción del usuario y las bajas calificaciones de los repartidores?
+2. **Optimización de Cobertura:** ¿Cómo influyen los cuellos de botella temporales y espaciales en los tiempos de espera para estructurar un plan prescriptivo de mejora operativa?
 
 ---
 
-## 🗄️ Arquitectura del Dataset e Ingesta de Datos
+## 🗄️ 2. Ingesta de Datos y Arquitectura del Pipeline
 
-El dataset procesado corresponde a las operaciones logísticas de Zomato, descargado desde Kaggle Hub (`saurabhbadole/zomato-delivery-operations-analytics-dataset`).
-
-* **Pipeline de Ingesta:** Para simular un entorno de arquitectura empresarial de datos, el dataset crudo se importó a una base de datos **SQLite** (`zomato_operations.db`), volcando la tabla `envios` hacia DataFrames de Pandas mediante consultas SQL optimizadas (`SELECT * FROM envios`).
-* **Dimensiones Iniciales:** 45,584 registros y 20 columnas operativas.
-
----
-
-## 🧼 Análisis Exploratorio de Datos (EDA) y Limpieza Espacial
-
-El EDA se dividió en cuatro ejes metodológicos principales:
-
-### 1. Auditoría de Calidad y Estandarización de Nulos
-Se identificaron nulos enmascarados como texto (`"NaN"`, `"N/A"`, `"nan"`, `"-1"`). Se estandarizaron a valores matemáticos nulos de NumPy (`np.nan`). Las variables estratégicas fueron imputadas bajo criterios rigurosos:
-* **Variables Numéricas:** Imputación por Mediana (`delivery_person_ratings`, `delivery_person_age`).
-* **Variables Categóricas:** Imputación por Moda (`weather_conditions`, `road_traffic_density`).
-* **Variables Temporales:** Descarte directo de filas con `time_orderd` nulo para no generar sesgo en la imputación de la hora de emisión.
-
-### 2. Tratamiento de Errores Geográficos (*Null Island*)
-Mediante análisis de dispersión espacial (*Scatter plots*), se detectó una anomalia severa de recolección de datos: coordenadas situadas exactamente en $(0.0, 0.0)$ (latitud 0, longitud 0). Se depuraron estructuralmente estas filas para evitar distorsiones kilométricas en el cálculo del trayecto.
+El dataset primario de operaciones de entrega (`saurabhbadole/zomato-delivery-operations-analytics-dataset`) fue extraído e integrado mediante una arquitectura híbrida de SQL y DataFrames en Python:
 
 ```python
-# Depuración estricta de Null Island (0.0, 0.0)
+# Extracción desde SQLite y pasaje a Pandas
+import sqlite3
+import pandas as pd
+
+conn = sqlite3.connect('zomato_operations.db')
+df_raw.to_sql('envios', conn, if_exists='replace', index=False)
+df_sql = pd.read_sql("SELECT * FROM envios", conn)
+conn.close()
+```
+
+* **Volumen inicial:** 45,584 registros y 20 columnas.
+* **Estandarización de nulos enmascarados:** Reemplazo de cadenas textuales (`'NaN'`, `'N/A'`, `'nan'`, `'-1'`) por `np.nan` para auditoría rigurosa.
+
+---
+
+## 🧼 3. Preprocesamiento, Auditoría de Calidad y EDA
+
+### A. Limpieza Espacial (Filtro *Null Island*)
+Se identificó una anomalía en el registro satelital con coordenadas posicionadas en la latitud `0.0` y longitud `0.0`. Se aplicó un filtro estricto para eliminar distorsiones kilométricas:
+
+```python
 df = df[
-    (df['restaurant_latitude'] != 0.0) &
-    (df['restaurant_longitude'] != 0.0) &
-    (df['delivery_location_latitude'] != 0.0) &
-    (df['delivery_location_longitude'] != 0.0)
+    (df['restaurant_latitude'] != 0.0) & (df['restaurant_longitude'] != 0.0) &
+    (df['delivery_location_latitude'] != 0.0) & (df['delivery_location_longitude'] != 0.0)
 ].copy()
 ```
 
-### 3. Winsorización y Normalización
-* **Outliers:** Se aplicó **Winsorización al 1% y 99%** (`scipy.stats.mstats.winsorize`) sobre `time_taken_(min)` y `delivery_person_ratings`, acotando valores atípicos sin eliminar volumen muestral útil.
-* **Escalamiento:** Estandarización Z-score (`StandardScaler`) para crear métricas relativas respecto a la media del grupo.
-
-### 4. Resumen Estadístico Post-EDA
-* **Filas finales:** 42,075 registros (reducción de 3,509 filas defectuosas por GPS o nulos irreversibles).
-* **Tiempo Promedio de Entrega:** $26.28 \text{ min}$ (Desviación estándar de $35.4\%$).
-* **Calificación Promedio:** $4.63 \text{ estrellas}$ (Alta concentración entre $4.5$ y $5.0$).
+### B. Tratamiento de Outliers y Escalamiento
+* **Winsorización:** Se limitaron los valores atípicos de `time_taken_(min)` y `delivery_person_ratings` al percentil $[1\%, 99\%]$ mediante `scipy.stats.mstats.winsorize`, preservando el volumen de muestra sin eliminar registros.
+* **Normalización Z-Score:** Generación de métricas estandarizadas para dashboards (`time_taken_(min)_zscore`).
 
 ---
 
-## 🛠️ Ingeniería de Características (Feature Engineering)
+## 📐 4. Ingeniería de Características (Feature Engineering)
 
-Se construyeron nuevas métricas operativas para traducir datos crudos en variables explicativas con alto valor estratégico:
-
-1. **Distancia Haversine (`distancia_km`):** Cálculo de la distancia esférica real entre las coordenadas del restaurante y el cliente:
+1. **Distancia Haversine ($km$):** Cálculo de la distancia ortodrómica real sobre la superficie terrestre:
    $$d = 2r \arcsin \left( \sqrt{\sin^2\left(\frac{\Delta \phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta \lambda}{2}\right)} \right)$$
-2. **Velocidad Promedio (`velocidad_kmh`):** Métrica objetiva que combina `distancia_km` y `time_taken_(min)`.
-3. **Rango de Rapidez (`rango_rapidez`):** Discretización operativa: *Lento* ($<15 \text{ km/h}$), *Estándar* ($15\text{--}30 \text{ km/h}$), *Rápido* ($>30 \text{ km/h}$).
-4. **Banderas Temporales:** Extracción del día (`dia_semana`), indicador binario de fin de semana (`fin_de_semana`) y hora entera del pedido (`hora_pedido`).
-5. **Entorno Operativo:**
-   * **`clima_adverso`:** Variable binaria reestructurada mediante expresiones regulares (`stormy|sandstorms|fog|rainy|windy`).
-   * **`trafico_nivel`:** Codificación ordinal de la densidad del tráfico ($1 = \text{Ligero}$, $2 = \text{Transitable}$, $3 = \text{Congestionado}$, $4 = \text{Embotellamiento}$).
+2. **Velocidad y Rango de Rapidez:** Determinación de velocidad promedio ($km/h$) y discretización en categorías operativas: *Lento* ($<15 \text{ km/h}$), *Estándar* ($15\text{--}30 \text{ km/h}$) y *Rápido* ($>30 \text{ km/h}$).
+3. **Contexto Temporal:** Extracción de `hora_pedido`, `dia_semana` (traducido al español) y la bandera binaria `fin_de_semana`.
+4. **Factores del Entorno:** 
+   * `clima_adverso`: Indicador binario ($1 = \text{Tormenta, Niebla, Lluvia, Viento}$; $0 = \text{Favorable}$).
+   * `densidad_trafico`: Mapeo ordinal de congestión vial ($1 = \text{Ligero}$, $2 = \text{Transitable}$, $3 = \text{Congestionado}$, $4 = \text{Embotellamiento}$).
 
 ---
 
-## 🚨 Auditoría de Calidad y Prevención de Data Leakage
+## 🔒 5. Codificación y Prevención de Target Leakage
 
-Durante las pruebas iniciales de modelado, se detectó un valor inusual de $R^2 = 1.0$ y $\text{MAE} = 0.0$. 
-
-### Diagnóstico y Resolución
-Una auditoría del *Feature Importance* reveló que la columna `delivery_person_ratings_zscore` concentraba el $100\%$ del peso predictivo por ser una transformación matemática directa de la variable objetivo ($y$). 
-
-* **Acción Correctiva (Fase 7):** Se excluyeron de la matriz $X$ las columnas `delivery_person_ratings` y `delivery_person_ratings_zscore`.
-* **Train-Test Split:** División limpia 80% entrenamiento (32,275 filas) y 20% prueba (8,069 filas) utilizando la semilla aleatoria `SEED = 42`.
+* **One-Hot Encoding:** Aplicado sobre variables categóricas nominales (`tipo_vehiculo`, `rango_rapidez`, `dia_semana`, `city`).
+* **Auditoría de Target Leakage:** Durante la iteración inicial se detectó una métrica engañosa ($R^2 = 1.0$). La inspección del *Feature Importance* reveló que `delivery_person_ratings_zscore` actuaba como un predictor tramposo por ser la transformación directa de la variable objetivo $y$. Fue excluida permanentemente junto a IDs y timestamps.
+* **División Muestral:** Split 80% entrenamiento (32,275 filas) y 20% prueba ciega (8,069 filas).
 
 ---
 
-## 📊 Modelado Predictivo de Machine Learning (Fase 8)
+## 📊 6. Modelado Predictivo de Machine Learning (Fase 8)
 
-Se entrenaron y evaluaron cuatro algoritmos de regresión supervisada para predecir la calificación del repartidor (`delivery_person_ratings`):
+Se entrenaron y evaluaron cuatro algoritmos para predecir la calificación del cliente (`delivery_person_ratings`):
 
-| Modelo | MAE | RMSE | $R^2$ Score | Desempeño |
+| Modelo | MAE | RMSE | $R^2$ Score | Evaluación Metodológica |
 | :--- | :---: | :---: | :---: | :--- |
-| **Random Forest Regressor** | **0.1824** | **0.2541** | **0.4163** | **Ganador Absoluto** |
-| **Gradient Boosting Regressor** | 0.1882 | 0.2598 | 0.3895 | Competitivo |
-| **Árbol de Decisión** | 0.1891 | 0.2614 | 0.3820 | Susceptible a overfitting |
-| **Regresión Lineal (Baseline)** | 0.2281 | 0.3082 | 0.1410 | Fracaso por no linealidad |
+| **Regresión Lineal (Baseline)** | 0.2281 | 0.3082 | 0.1410 | Inadecuado por asumir linealidad continua. |
+| **Árbol de Decisión** | 0.1891 | 0.2614 | 0.3820 | Captura umbrales pero presenta varianza alta. |
+| **Gradient Boosting** | 0.1882 | 0.2598 | 0.3895 | Buen desempeño predictivo general. |
+| **Random Forest Regressor 🏆** | **0.1824** | **0.2541** | **0.4163** | **Modelo ganador.** Ajuste óptimo sin overfitting. |
 
-### Insights Técnicos del Modelado
-1. **El cliente valora el tiempo total de espera:** La variable `time_taken_(min)` domina el *Feature Importance* con más del **$44\%$ del peso predictivo total**. La distancia ($8.3\%$) y la velocidad ($4.8\%$) tienen un rol secundario.
-2. **Operación por Umbrales de Tolerancia:** La Regresión Lineal fracasó ($R^2 = 14.1\%$) porque asumía que cada minuto extra restaba nota de forma constante. Random Forest ganó ($R^2 = 41.63\%$) al capturar que pequeñas variaciones en entregas rápidas ($15\text{--}20 \text{ min}$) no alteran la nota, pero al superar los $30\text{--}35 \text{ minutos}$, la calificación se desploma de forma no lineal.
-3. **Capacidad Explicativa:** El modelo explica el **$41.63\%$ de la varianza total** de las calificaciones con un error promedio de apenas $0.18$ estrellas ($\text{MAE} = 0.1824$).
+### 💡 Importancia de Características (Top Business Drivers)
+
+![Importancia de Características de Negocio](feature_importance_fase8.png)
+
+1. `time_taken_(min)` (**44.2%**): El tiempo total de espera es el determinante categórico de la nota.
+2. `trafico_nivel` (**10.8%**): Principal fricción externa del entorno.
+3. `distancia_km` (**8.3%**): Dimensión física del trayecto.
+4. `vehicle_condition` (**7.7%**): Restricción mecánica y velocidad operativa.
+
+> **Conclusión del Modelado:** La insatisfacción del cliente opera por **umbrales de tolerancia**. Variaciones en entregas de 15 a 20 minutos no alteran la nota, pero al superar los 30–35 minutos la calificación cae de forma abrupta.
 
 ---
 
-## 🔬 Diagnóstico de Causa Raíz e Inferencia Estadística (Fase 9)
+## 🔬 7. Diagnóstico de Causa Raíz e Inferencia Estadística (Fase 9)
 
-![Dashboard Causa Raíz e Inferencia](images/dashboard_fase9.png)
-
-Dado que la calificación ($y$) depende directamente del tiempo de entrega ($X_{\text{principal}}$), la Fase 9 evaluó las causas raíz estructurales que generan demoras, aplicando pruebas inferenciales formales.
+Para entender qué genera los retrasos en la variable explicativa principal (`time_taken_(min)`), se ejecutaron análisis de mediación y pruebas inferenciales de hipótesis:
 
 $$\text{Factores Operativos } (\text{Tráfico, Vehículo, Clima, Calendario}) \longrightarrow \text{Tiempo de Entrega } (X_{\text{principal}}) \longrightarrow \text{Calificación } (y)$$
 
-```
-=====================================================================================
-PRUEBAS DE INFERENCIA ESTADÍSTICA (EVALUACIÓN DE SIGNIFICANCIA OPERATIVA)
-=====================================================================================
-• ANOVA Tráfico vs. Tiempo:            Estadístico F =  3033.52 | p-valor = 0.00e+00
-• T-Test Fin de Semana vs. Tiempo:     Estadístico t =     5.02 | p-valor = 5.20e-07
-• T-Test Clima Favorable vs. Adverso:  Estadístico t =   -12.91 | p-valor = 4.75e-38
-• ANOVA Estado Vehículo vs. Tiempo:    Estadístico F =  1733.31 | p-valor = 0.00e+00
-```
+### ⚠️ Data Quality Note
+*Durante el diagnóstico inicial, `clima_adverso` presentó varianza nula por coincidencia rígida de texto. Se reestructuró la lógica mediante expresiones regulares (`.str.contains('stormy|sandstorms|fog|rainy|windy')`), logrando una distribución balanceada ($67.0\%$ favorable vs. $33.0\%$ adverso) y permitiendo la validación inferencial ($t = -12.91, p = 4.75 \times 10^{-38}$).*
 
-### Resumen de Hallazgos Inferenciales
+### 📌 Pruebas Inferenciales ($p < 0.001$)
 
-1. **Densidad de Tráfico ($F = 3033.52, p = 0.00$):**
-   * Correlación con tiempo: $r = 0.4160$.
-   * Pasar de Tráfico Ligero ($21.29 \text{ min}$) a Embotellamiento / *Jam* ($31.07 \text{ min}$) genera un **sobrecosto operativo de $+9.78 \text{ minutos}$ (+45.94% de demora)**.
-2. **Entregas Múltiples ($r = 0.3861$):**
-   * Asignar más de un pedido por viaje es el segundo factor que más infla el tiempo, evidenciando que el ahorro por ruteo agrupado deteriora el nivel de servicio.
-3. **Condición del Vehículo ($F = 1733.31, p = 0.00$):**
-   * Vehículos en Mal Estado ($0$): $29.98 \text{ min}$ promedio.
-   * Vehículos Regular ($1$) o Bueno ($2$): $\sim 24.4 \text{ min}$ promedio.
-   * **Salto crítico:** La penalización ocurre únicamente al caer a la categoría $0$, sumando **$+5.6 \text{ minutos}$ de retraso por viaje**. Entre estado $1$ y $2$ no existen diferencias operativas significativas.
-4. **Clima Adverso ($t = -12.91, p = 4.75 \times 10^{-38}$):**
-   * Clima Favorable: $25.43 \text{ min}$ vs. Clima Adverso: $26.70 \text{ min}$.
-   * Provoca un sobrecosto de **$+1.27 \text{ minutos}$ (+4.99% de demora)**.
-5. **Estructura Semanal ($t = 5.02, p = 5.20 \times 10^{-7}$):**
-   * Los días laborales ($26.42 \text{ min}$) resultaron ser **$0.53 \text{ minutos}$ más lentos** que el fin de semana ($25.89 \text{ min}$), impulsados por la congestión comercial de los miércoles y viernes.
+| Factor Evaluado | Prueba Estadística | Estadístico | $p\text{-valor}$ | Impacto Operativo Cuantificado |
+| :--- | :---: | :---: | :---: | :--- |
+| **Densidad de Tráfico** | ANOVA | $F = 3033.52$ | $0.00e+00$ | Tráfico Ligero ($21.29$ min) vs. Embotellamiento ($31.07$ min) $\rightarrow$ **$+9.78$ min (+45.94%)**. |
+| **Fin de Semana vs. Laboral** | T-Test | $t = 5.02$ | $5.20 \times 10^{-7}$ | Días hábiles más lentos ($26.42$ min) que fin de semana ($25.89$ min) por congestión comercial. |
+| **Condición del Clima** | T-Test | $t = -12.91$ | $4.75 \times 10^{-38}$ | Clima Adverso ($26.70$ min) vs. Favorable ($25.43$ min) $\rightarrow$ **$+1.27$ min (+4.99%)**. |
+| **Estado del Vehículo** | ANOVA | $F = 1733.31$ | $0.00e+00$ | Vehículo Malo ($29.98$ min) vs. Regular/Bueno ($\sim 24.4$ min) $\rightarrow$ **$+5.6$ min por degradación**. |
+
+![Dashboard 2x2 Causa Raíz e Inferencia](dashboard_fase9.png)
+
+*Correlaciones clave con el tiempo:* `trafico_nivel` ($r = 0.4160$), `multiple_deliveries` ($r = 0.3861$), `delivery_person_age` ($r = 0.3033$).
 
 ---
 
-## 💡 Conclusiones y Recomendaciones Prescriptivas de Negocio (Fase 10)
+## 💡 8. Recomendaciones Prescriptivas de Negocio (Fase 10)
 
-Para transformar los hallazgos analíticos en decisiones de negocio con impacto operativo, se proponen cuatro intervenciones prescriptivas para Zomato:
-
-### 1. Promesa de Tiempo Dinámica (Algoritmo ETA Inteligente)
-* **Acción:** Ajustar el cálculo del tiempo estimado de llegada (ETA) que visualiza el usuario en la app.
-* **Justificación:** Cuando el sistema detecte tráfico denso (`High` o `Jam`) o clima adverso, debe ampliar automáticamente el tiempo prometido. Si el usuario recibe un ETA realista de $35 \text{ min}$ en lugar de $20 \text{ min}$, la expectativa se ajusta y la nota no cae al cruzar el umbral de tolerancia.
-
-### 2. Estándar Mínimo de Flota (Filtro de Mantenimiento Vehicular)
-* **Acción:** Implementar revisiones técnicas obligatorias para vehículos calificados en condición $0$ (Malo).
-* **Justificación:** La inferencia estadística probó que un vehículo degradado retrasa el pedido en $+5.6 \text{ minutos}$, mientras que llevarlo a condición regular ($1$) restituye toda la eficiencia operativa.
-
-### 3. Tope a las Entregas Múltiples en Horas Pico
-* **Acción:** Restringir la asignación de pedidos simultáneos a un solo repartidor cuando la densidad de tráfico sea `Congestionado` o `Embotellamiento`.
-* **Justificación:** La correlación de $r = 0.3861$ demuestra que el ahorro económico del ruteo múltiple destruye valor al penalizar la velocidad y bajar la calificación del cliente.
-
-### 4. Compensación Meteorológica Automatizada
-* **Acción:** Incrementar automáticamente la ventana de entrega en $+1.27 \text{ minutos}$ durante alertas de tormenta, niebla o lluvia.
+1. **Promesa de Tiempo Dinámica (ETA Inteligente):** Reconfigurar el tiempo estimado de entrega en la app al detectar tráfico `Congestionado` o `Embotellamiento`. Ajustar las expectativas del cliente antes del despacho evita penalizaciones de calificación al cruzar el umbral de 30 min.
+2. **Estándar Mínimo de Flota:** Implementar filtros e inspecciones obligatorias a repartidores con vehículos en condición $0$ (Malo), eliminando el sobrecosto de $+5.6$ minutos de demora por viaje.
+3. **Restricción de Entregas Múltiples en Horas Pico:** Limitar el ruteo de envíos simultáneos en zonas de alto tráfico ($r = 0.3861$), priorizando la retención del cliente frente al ahorro logístico secundario.
+4. **Compensación Meteorológica Automática:** Extender la ventana de entrega en $+1.27$ minutos durante alertas de lluvia o tormenta.
 
 ---
 
-## 🚀 Hoja de Ruta Técnica (Evolución v2.0)
+## 🚀 9. Hoja de Ruta Técnica (Evolución v2.0)
 
-Para la siguiente iteración del proyecto analítico, se recomienda:
 * **Aislamiento del Tiempo de Cocina:** Limpiar y calcular el delta entre `time_orderd` y `time_order_picked` para separar los retrasos del restaurante de los retrasos en ruta.
 * **Captura de Varianza No Explicada ($58.4\%$):** Incorporar en la app una micro-encuesta post-entrega que mida el estado de la comida (temperatura/empaque) y la amabilidad del repartidor, factores invisibles en la tabla de datos actual.
 
 ---
 
-## 🛠️ Instrucciones de Reproducibilidad
+## 🔄 10. Instrucciones de Reproducibilidad
 
-1. **Clonar el repositorio:**
-   ```bash
-   git clone https:[//github.com/tu-usuario/zomato-delivery-analytics.git](https://github.com/chinomartin6/Proyecto-ML--Rendimiento-deliverys-Zomato)
-   cd Rendimiento-deliverys-Zomato
-   ```
+Para ejecutar este pipeline y replicar exactamente las mismas métricas, transformaciones y resultados del modelo de Machine Learning:
 
-2. **Instalar dependencias:**
-   ```bash
-   pip install pandas numpy scikit-learn scipy matplotlib seaborn kagglehub
-   ```
+### 1. Clonar el Repositorio e Instalar Entorno
+```bash
+# Clonar el repositorio
+git clone https://github.com/chinomartin6/Proyecto-ML--Rendimiento-deliverys-Zomato.git
+cd Proyecto-ML--Rendimiento-deliverys-Zomato
 
-3. **Ejecutar el pipeline:**
-   * Abrir y ejecutar secuencialmente el cuaderno Jupyter `proyecto_zomato.ipynb` en Google Colab o Jupyter Lab.
-   * El script descargará automáticamente el dataset vía `kagglehub`, creará la base SQLite local y ejecutará desde la Fase 1 hasta la Fase 9 sin interrupciones.
+# Instalar las dependencias requeridas
+pip install -r requirements.txt
+```
+
+### 2. Ejecución del Código
+* **En Google Colab:** Subir o abrir el archivo `proyecto_zomato.ipynb` y seleccionar la opción **Entorno de ejecución $\rightarrow$ Ejecutar todo** (`Ctrl + F9`).
+* **En Local (Jupyter Lab / Notebook):** Abrir la terminal, ejecutar `jupyter notebook` y correr la secuencia completa de celdas.
+
+### 3. Garantía de Determinismo
+El pipeline fija una semilla de reproducibilidad global (`SEED = 42` / `np.random.seed(42)`) en:
+* El reemplazo y tratamiento del dataset.
+* La división estricta de conjuntos de entrenamiento y prueba (*Hold-out split 80/20*).
+* El entrenamiento de los algoritmos de árbol y ensamble (`Random Forest`, `Gradient Boosting`, `Decision Tree`).
 
 ---
 
-*Desarrollado como proyecto integral de Ciencia de Datos y Analítica Diagnóstica de Negocio.*
+## 🛠️ 11. Tecnologías Utilizadas
+* **Lenguaje:** Python 3.10+
+* **Manipulación & Base de Datos:** Pandas, NumPy, SQLite3
+* **Estadística e Inferencia:** SciPy (Stats & Mstats)
+* **Machine Learning:** Scikit-Learn (Random Forest, Gradient Boosting, Decision Tree, Linear Regression)
+* **Visualización:** Seaborn, Matplotlib
 
+---
+
+## 👤 12. Autor y Contacto
+**Nicolás Martín ("El Chino")**  
+*Estudiante avanzado de Ciencia Política (UNMDP) & Analista de Datos*  
+* [LinkedIn](https://www.linkedin.com/in/nicolaschinomartin6)
+* [GitHub](https://github.com/chinomartin6)
 * Email: nicolaschinomartin@gmail.com
